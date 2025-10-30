@@ -21,6 +21,8 @@ async function dbCon() {
             console.log('DATABASE CONNECTION TERMINATED...!')
         );
 
+
+        
     }
     catch (err) {
 

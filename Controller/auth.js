@@ -1,4 +1,4 @@
-// const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
 const userValue = require("../db/userSchema");
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -10,13 +10,13 @@ async function signUp(req, res) {
     try {
         // destructure
         const { firstName, lastName, email, password } = req.body;
-        console.log(firstName, lastName, email, password, "line 13");
-        
+        // console.log(firstName, lastName, email, password, "line 13");
+
         bcrypt.genSalt(saltRounds, function (err, salt) {
             bcrypt.hash(password, salt, function (err, hash) {
 
                 const user = { firstName, lastName, email, password: hash, role: "admin" };
-                
+
                 const result = new userValue(user).save();
 
                 res.send({
@@ -41,6 +41,46 @@ async function signUp(req, res) {
     };
 };
 
+async function login(req, res) {
+    
+    try {
+        // destructure
+        const { email, password } = req.body;
+
+        const dbUser = await userValue.findOne({ email });
+        console.log(dbUser, "here is a user");
+
+        // Load hash from your password DB.
+        bcrypt.compare(password, dbUser.password, function (err, result) {
+            // result == true
+
+            if (result) {
+                console.log(process.env.JWTSECRETKEY, "process.env.JWTSECRETKEY");
+                let token = jwt.sign(
+                    {
+                        email: dbUser.email,
+                        firstName: dbUser.firstName,
+                        "last name": dbUser.lastName,
+                        role: dbUser.role,
+                    },
+                    process.env.JWTSECRETKEY
+                );
+                console.log(token);
+                res.send({
+                    status: 200,
+                    message: "user login successfully",
+                    token,
+                });
+            }
+        });
+    } catch (err) {
+        res.send({
+            err,
+            status: 500,
+            message: "sorry! server is not responding",
+        });
+    }
+}
 
 async function home(req, res) {
 
@@ -77,5 +117,5 @@ async function home(req, res) {
 
 
 
-module.exports = { signUp, home };
+module.exports = { signUp, home, login };
 

@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 
-
 dotenv.config();
 
 console.log("secret key", process.env.JWTSECRETKEY);
@@ -16,7 +15,7 @@ const authrization = async (req, res, next) => {
         res.send({
             status: 401,
             message: "header are invalid",
-        });
+        })
     }
 
     try {
