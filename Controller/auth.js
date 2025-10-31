@@ -8,14 +8,18 @@ const saltRounds = 10;
 async function signUp(req, res) {
 
     try {
+
         // destructure
-        const { firstName, lastName, email, password } = req.body;
+        const { firstName, lastName, email, password, role } = req.body;
         // console.log(firstName, lastName, email, password, "line 13");
+
+
 
         bcrypt.genSalt(saltRounds, function (err, salt) {
             bcrypt.hash(password, salt, function (err, hash) {
 
-                const user = { firstName, lastName, email, password: hash, role: "admin" };
+                const user = { firstName, lastName, email, password: hash, role };
+                console.log(role);
 
                 const result = new userValue(user).save();
 
@@ -23,6 +27,7 @@ async function signUp(req, res) {
                     message: 'SignUp Successfuly',
                     result,
                     status: 200,
+                    role
                 });
 
             });
@@ -42,14 +47,17 @@ async function signUp(req, res) {
 };
 
 async function login(req, res) {
-    
+
     try {
         // destructure
         const { email, password } = req.body;
 
+
+
         const dbUser = await userValue.findOne({ email });
         console.log(dbUser, "here is a user");
 
+        console.log(dbUser.role);
         // Load hash from your password DB.
         bcrypt.compare(password, dbUser.password, function (err, result) {
             // result == true
@@ -95,12 +103,14 @@ async function home(req, res) {
                 status: 200,
                 message: "Welcome Admin"
             })
+        } else if (user.role === "user") {
+
+            res.send({
+                status: 200,
+                message: "Welcome user",
+            });
         }
 
-        res.send({
-            status: 200,
-            message: "Welcome user",
-        });
 
     }
     catch (err) {
