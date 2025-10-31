@@ -27,7 +27,6 @@ async function signUp(req, res) {
                     message: 'SignUp Successfuly',
                     result,
                     status: 200,
-                    role
                 });
 
             });
@@ -50,14 +49,13 @@ async function login(req, res) {
 
     try {
         // destructure
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
 
 
 
         const dbUser = await userValue.findOne({ email });
-        console.log(dbUser, "here is a user");
 
-        console.log(dbUser.role);
+        console.log(user.role, role, "line 60");
         // Load hash from your password DB.
         bcrypt.compare(password, dbUser.password, function (err, result) {
             // result == true
@@ -69,7 +67,7 @@ async function login(req, res) {
                         email: dbUser.email,
                         firstName: dbUser.firstName,
                         "last name": dbUser.lastName,
-                        role: dbUser.role,
+                        role: user.role,
                     },
                     process.env.JWTSECRETKEY
                 );
@@ -103,7 +101,9 @@ async function home(req, res) {
                 status: 200,
                 message: "Welcome Admin"
             })
-        } else if (user.role === "user") {
+        }
+
+        if (user.role === "user") {
 
             res.send({
                 status: 200,
