@@ -28,14 +28,13 @@ body {
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
 }
 
 .container .parent_1{
 
     width: 80%;
-    padding: 30px 0px;
 
     display: flex;
     flex-direction: row;
@@ -49,12 +48,21 @@ body {
     text-align: center;
 }
 
+#loginSide{
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .container .parent_1 button{
 
     width: 120px;
     height: 40px;
     color: white;
     font-size: 22px;
+    border-style: none;
     border-radius: 8px;
     background-color: rgb(99, 94, 94);
 }

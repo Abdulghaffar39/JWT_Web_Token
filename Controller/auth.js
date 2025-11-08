@@ -56,10 +56,19 @@ async function login(req, res) {
 
         const dbUser = await userValue.findOne({ email });
 
-        // res.send({
+        // return res.send({
         //     statu: 400,
         //     message: "Already Exist"
-        // })
+        // });
+
+        if (!dbUser) {
+
+            return res.send({
+                statu: 400,
+                message: "Please signUp"
+            })
+
+        }
 
         console.log(dbUser, "here is an user in line 60");
 
@@ -78,7 +87,9 @@ async function login(req, res) {
                     },
                     process.env.JWTSECRETKEY
                 );
+
                 console.log(token);
+
                 res.send({
                     status: 200,
                     message: "user login successfully",
