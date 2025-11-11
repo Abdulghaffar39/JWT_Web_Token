@@ -1,82 +1,43 @@
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const userValue = require("../db/userSchema");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-
-
 async function signUp(req, res) {
-
-    try {
-
-        // destructure 
-        const { fname, lname, email, password, role } = req.body;
-        // console.log(firstName, lastName, email, password, "line 13");
-
-        const Users = await userValue.findOne({ email })
-        console.log(Users, 'line number 17');
-
-        if (Users) {
-            return res.send({
-                status: 505,
-                message: "user already exists",
-            })
-        }
-
-        bcrypt.genSalt(saltRounds, function (err, salt) {
-            bcrypt.hash(password, salt, function (err, hash) {
-
-                const user = { fname, lname, email, password: hash, role };
-                console.log(role);
-
-                const result = new userValue(user).save();
-
-                res.send({
-                    message: 'SignUp Successfuly',
-                    result,
-                    status: 200,
-                    role
-                });
-
-            });
-        });
-
-    }
-    catch (err) {
-
-        res.send({
-
-            err,
-            status: 500,
-            message: "Sorry! Server is not responding"
-        });
-
-    };
-};
-
-async function login(req, res) {
-
     try {
         // destructure
+        const { fname, lname, email, password, role } = req.body;
+
+        bcrypt.genSalt(saltRounds, function (err, salt) {
+
+            bcrypt.hash(password, salt, function (err, hash) {
+
+                const user = { fname, lname, email, password, role };
+
+                const result = new userValue(user).save();
+                return res.send({
+                    message: "signup successfully",
+                    result,
+                    status: 200,
+                });
+            });
+        });
+    } catch (err) {
+        res.send({
+            err,
+            status: 500,
+            message: "sorry! server is not responding",
+        });
+    }
+}
+
+async function login(req, res) {
+    // destructure
+    try {
         const { email, password } = req.body;
 
         const dbUser = await userValue.findOne({ email });
-
-        // return res.send({
-        //     statu: 400,
-        //     message: "Already Exist"
-        // });
-
-        if (!dbUser) {
-
-            return res.send({
-                statu: 400,
-                message: "Please signUp"
-            })
-
-        }
-
-        console.log(dbUser, "here is an user in line 60");
+        console.log(dbUser, "here is a user");
 
         // Load hash from your password DB.
         bcrypt.compare(password, dbUser.password, function (err, result) {
@@ -87,14 +48,13 @@ async function login(req, res) {
                 let token = jwt.sign(
                     {
                         email: dbUser.email,
-                        firstName: dbUser.firstName,
-                        "last name": dbUser.lastName,
+                        firstName: dbUser.fname,
+                        "last name": dbUser.lname,
                         role: dbUser.role,
                     },
-                    process.env.JWTSECRETKEY
+                    process.env.JWTSECRETKEY,
+                    { expiresIn: "1d" }
                 );
-
-                console.log(token);
 
                 res.send({
                     status: 200,
@@ -113,10 +73,9 @@ async function login(req, res) {
 }
 
 async function home(req, res) {
-
     const { user } = req;
-    console.log(user, "line num 48");
-
+    console.log(user, "this is line 42");
+    // destructure
     try {
         if (user.role === "admin") {
             res.send({
@@ -128,21 +87,13 @@ async function home(req, res) {
             status: 200,
             message: "Welcome user",
         });
-
-    }
-    catch (err) {
-
+    } catch (err) {
         res.send({
-
             err,
             status: 500,
-            message: "Sorry! Server is not responding"
+            message: "sorry! server is not responding",
         });
+    }
+}
 
-    };
-};
-
-
-
-module.exports = { signUp, home, login };
-
+module.exports = { signUp, login, home};

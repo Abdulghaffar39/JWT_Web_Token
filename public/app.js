@@ -51,16 +51,8 @@ async function signup(e) {
         if (data.status === 200) {
 
             alert(data.message);
-            window.location.href = 'login.html'
-
-        } else if (data.status === 505){
-
-
-            alert('User already exists ' + data.message);
-
-        } else {
-
-            alert('Please fill correctly ' + data.message);
+            window.location.href = 'login.html';
+            return;
         }
 
 
