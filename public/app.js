@@ -1,43 +1,74 @@
 
-function signup(e) {
+async function signup(e) {
 
-    e.preventDefault();
-
-    let fname = document.getElementById("firstName").value
-    let lname = document.getElementById("lastName").value
-    let email = document.getElementById("email").value
-    let password = document.getElementById("password").value
-    let role = document.getElementById("role").value
+    try {
 
 
+        e.preventDefault();
 
-    if (fname === "" || lname === "" || email === "" || password === "") {
+        let fname = document.getElementById("firstName").value
+        let lname = document.getElementById("lastName").value
+        let email = document.getElementById("email").value
+        let password = document.getElementById("password").value
+        let role = document.getElementById("role").value
 
-        alert('Please fill all fields!');
-        return;
+
+
+        if (fname === "" || lname === "" || email === "" || password === "") {
+
+            alert('Please fill all fields!');
+            return;
+        }
+
+
+
+        if (role === "admin") {
+
+            console.log("Admin selected");
+
+        } else if (role === "user") {
+
+            console.log("User selected");
+
+        } else {
+
+            alert('Please select user role')
+            return
+
+        };
+
+
+        const res = await axios.post('http://localhost:3000/api/signUp',
+
+            { fname, lname, email, password, role }
+
+        )
+
+        const data = res.data;
+        console.log(res);
+
+
+        if (data.status === 200) {
+
+            alert(data.message);
+            window.location.href = 'login.html'
+
+        } else if (data.status === 505){
+
+
+            alert('User already exists ' + data.message);
+
+        } else {
+
+            alert('Please fill correctly ' + data.message);
+        }
+
+
+    } catch (err) {
+
+        console.error(err);
+        alert('⚠️ Server error or connection issue.');
     }
-
-
-
-    if (role === "admin") {
-
-        console.log("Admin selected");
-
-    } else if (role === "user") {
-
-        console.log("User selected");
-
-    } else {
-
-        alert('Please select user role')
-        return
-
-    };
-
-
-    console.log('testing', fname, lname, email, password, role);
-
-    window.location.href = 'login.html'
 
 }
 

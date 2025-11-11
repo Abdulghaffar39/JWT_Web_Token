@@ -9,16 +9,24 @@ async function signUp(req, res) {
 
     try {
 
-        // destructure
-        const { firstName, lastName, email, password, role } = req.body;
+        // destructure 
+        const { fname, lname, email, password, role } = req.body;
         // console.log(firstName, lastName, email, password, "line 13");
 
+        const Users = await userValue.findOne({ email })
+        console.log(Users, 'line number 17');
 
+        if (Users) {
+            return res.send({
+                status: 505,
+                message: "user already exists",
+            })
+        }
 
         bcrypt.genSalt(saltRounds, function (err, salt) {
             bcrypt.hash(password, salt, function (err, hash) {
 
-                const user = { firstName, lastName, email, password: hash, role };
+                const user = { fname, lname, email, password: hash, role };
                 console.log(role);
 
                 const result = new userValue(user).save();
@@ -51,8 +59,6 @@ async function login(req, res) {
     try {
         // destructure
         const { email, password } = req.body;
-
-
 
         const dbUser = await userValue.findOne({ email });
 
